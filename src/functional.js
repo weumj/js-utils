@@ -14,7 +14,7 @@ export const forComprehension = gen => {
 	const doRecur = v => {
 		const {value, done} = doing.next(v);
 
-		return done ? value : value.flatMap(doRecur);
+		return done ? value.map() : value.flatMap(doRecur);
 	};
 
 	// TODO trampoline

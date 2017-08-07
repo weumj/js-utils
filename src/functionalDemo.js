@@ -2,10 +2,6 @@ import {forComprehension} from "./functional";
 
 
 class Maybe {
-	static _empty(val) {
-		return val === null || val === undefined;
-	}
-
 	static of(val) {
 		return new Maybe(val);
 	}
@@ -14,12 +10,20 @@ class Maybe {
 		this._val = val;
 	}
 
+	isNothing() {
+		return this._val === null || this._val === undefined;
+	}
+
 	map(fn) {
-		return Maybe._empty(this._val) ? this : Maybe.of(fn(this._val));
+		return this.isNothing() ? this : Maybe.of(fn(this._val));
 	}
 
 	flatMap(fn) {
-		return Maybe._empty(this._val)? this._val : fn(this._val);
+		return this.isNothing() ? this : fn(this._val);
+	}
+
+	orElse(defaultVal) {
+		return this.isNothing() ? defaultVal : this._val;
 	}
 }
 
