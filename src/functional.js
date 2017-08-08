@@ -5,18 +5,30 @@ export const curry = (fn, arr = []) => (...args) =>
 		innerArgs.length === fn.length ? fn(...innerArgs) : curry(fn, innerArgs)
 	)([...arr, ...args]);
 
+export const trampoline = fn => {
+	return function (...args) {
+		let res = fn.apply(this, args);
+
+		while(res && res instanceof Function){
+			res = res();
+		}
+
+		return res;
+	};
+};
+
 /**
  *
  * @param gen {GeneratorFunction}
  */
-export const forComprehension = gen => {
+export const doNotation = gen => {
 	const doing = gen();
-	const doRecur = v => {
+
+	const _doRecur = trampoline(function doRecur(v){
 		const {value, done} = doing.next(v);
 
-		return done ? value.map() : value.flatMap(doRecur);
-	};
+		return done ? value : () => value.flatMap(doRecur);
+	});
 
-	// TODO trampoline
-	return doRecur(null);
+	return _doRecur();
 };
